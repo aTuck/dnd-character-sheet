@@ -28,6 +28,30 @@
   color: #61dafb;
 }
 
+.spell-card {
+  /* Add your styles for the spell-card class here */
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  background-color: lightgray;
+  font-family: 'Cinzel Decorative', serif;
+}
+
+.spell-card-footer-container {
+  display:flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: beige;
+}
+.spell-card-footer-text {
+  display: flex;
+}
+.spell-info-school {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
