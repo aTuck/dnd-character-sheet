@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import healingword from "./spells/healing-word.png";
+import healingword from "./data/healing-word.png";
 
 const Spell = () => {
   const [spellData, setSpellData] = useState(null);
@@ -7,7 +7,7 @@ const Spell = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = require("./cleric.json");
+        const data = require("./data/healing-word.json");
         setSpellData(data);
       } catch (error) {
         console.error("Error fetching spell data:", error);
@@ -94,21 +94,19 @@ const Spell = () => {
           </div>
           <div className="spell-description">
             <p>{spellData.description.text}</p>
-            {spellData.description.higher_levels && (
-              <p>⬆️ {spellData.description.higher_levels.text}</p>
-            )}
+            <p>⬆️ {spellData.higher_levels.text}</p>
           </div>
           <div className="spell-card-footer-container">
+            <img
+              src={healingword}
+              alt=""
+              style={{ width: "300px", height: "2n00px" }}
+            />
             <div className="spell-card-footer-text">
               <h2>{spellData.name}</h2>
               <div>Lv.</div>
               <div>{spellData.level}</div>
             </div>
-            <img
-              src={healingword}
-              alt=""
-              style={{ width: "300px", height: "200px" }}
-            />
           </div>
         </div>
       ) : (
