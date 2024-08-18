@@ -5,8 +5,8 @@ import { OrbitControls } from "@react-three/drei";
 
 import SpellCard from "../spells/SpellCard";
 import Test3dModel from "../3dModels/Test3dModel";
-import SpellSlot3dModel from "../3DModels/SpellSlot3dModel";
-
+import SpellSlot3dModel from "../3dModels/SpellSlot3dModel";
+import Draggable from "../Draggable";
 function App() {
   return (
     <div
@@ -45,15 +45,21 @@ function App() {
 
       <div
         style={{
-          width: "50%",
-          height: "50%",
+          width: "1920px",
+          height: "1080px",
           margin: "auto",
           position: "relative",
           zIndex: "0",
         }}
       >
         <Canvas
-          camera={{ position: [0, 0, 90] }}
+          orthographic
+          camera={{
+            zoom: 5, // Adjust zoom to control the size of objects
+            position: [0, 0, 100], // Position the camera to look directly at the origin
+            near: 0.1,
+            far: 1000,
+          }}
           style={{ border: "1px solid black" }}
         >
           <ambientLight intensity={0.4} />
@@ -61,9 +67,11 @@ function App() {
           <directionalLight color="white" position={[5, 5, 5]} />
           <directionalLight color="white" position={[5, 0, 5]} />
           <directionalLight color="white" position={[0, 5, 5]} />
-          <Test3dModel />
+          <Draggable>
+            <Test3dModel />
+          </Draggable>
           <SpellSlot3dModel />
-          <OrbitControls />
+          {/* <OrbitControls /> */}
         </Canvas>
       </div>
     </div>
