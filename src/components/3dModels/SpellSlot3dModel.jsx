@@ -1,29 +1,57 @@
-import React, { useState, useEffect } from "react";
-import Model from "./Model";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 
-function SpellSlot3dModel() {
+import Model from "./Model";
+
+const SpellSlot3dModel = forwardRef((isHovering, ref) => {
+  const modelId = useMemo(() => `spell-slot-${uuidv4()}`, []);
+  const modelRef = useRef();
+  useImperativeHandle(ref, () => modelRef.current);
+
   const [geometry, setGeometry] = useState();
   const [texture, setTexture] = useState();
 
   useEffect(() => {
-    const loader = new STLLoader();
-    loader.load("./test.stl", (geo) => {
-      const spellSlotGeometry = new THREE.BoxGeometry(125, 180, 12);
-      setGeometry(spellSlotGeometry);
-      console.log("loaded stl geometry", geo);
-    });
+    const spellSlotGeometry = new THREE.BoxGeometry(75, 90, 12);
+
+    const uvAttribute = spellSlotGeometry.attributes.uv;
+    for (let i = 0; i < uvAttribute.count; i++) {
+      const u = uvAttribute.getX(i);
+      const v = uvAttribute.getY(i);
+
+      // Modify UV coordinates
+      uvAttribute.setXY(i, u * 0.4 + 1, v * 0.2 + 1.25); // Example adjustment
+    }
+    uvAttribute.needsUpdate = true; // Mark the attribute as needing an update
+
+    setGeometry(spellSlotGeometry);
 
     const textureLoader = new TextureLoader();
-    textureLoader.load("./textures/sword.png", (texture) => {
+    textureLoader.load("./textures/spell-slot.png", (texture) => {
+      texture.repeat.set(2, 4);
       setTexture(texture);
-      console.log("loaded texture", texture);
+      console.log(`${modelId}: loaded texture`, texture);
     });
   }, []);
 
-  return <>{geometry && <Model geometry={geometry} texture={texture} />}</>;
-}
+  return (
+    <>
+      {geometry && (
+        <group ref={modelRef}>
+          <Model geometry={geometry} texture={texture} />
+        </group>
+      )}
+    </>
+  );
+});
 
 export default SpellSlot3dModel;

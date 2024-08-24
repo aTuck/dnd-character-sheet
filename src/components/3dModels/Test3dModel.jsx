@@ -13,12 +13,6 @@ function Test3dModel() {
       setGeometry(geo);
       console.log("loaded stl geometry", geo);
     });
-
-    const textureLoader = new TextureLoader();
-    textureLoader.load("./textures/sword.png", (texture) => {
-      setTexture(texture);
-      console.log("loaded texture", texture);
-    });
   }, []);
 
   return <>{geometry && <Model geometry={geometry} texture={texture} />}</>;

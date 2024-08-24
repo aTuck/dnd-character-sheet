@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 
@@ -7,7 +7,26 @@ import SpellCard from "../spells/SpellCard";
 import Test3dModel from "../3dModels/Test3dModel";
 import SpellSlot3dModel from "../3dModels/SpellSlot3dModel";
 import Draggable from "../Draggable";
+import Slottable from "../Slottable";
+import SpellCard3dModel from "../3dModels/SpellCard3dModel";
+
+import * as THREE from "three";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import SlotGroup from "../SlotGroup";
+import SlotItem from "../SlotItem";
+import SlotSlot from "../SlotSlot";
+
 function App() {
+  const [isGlowing, setIsGlowing] = useState(false);
+
+  const handleSlot = (card, slot) => {
+    console.log("Card slotted!", card, slot);
+  };
+
+  const handleHoveringEffect = (object) => {
+    setIsGlowing(true);
+  };
+
   return (
     <div
       style={{
@@ -65,13 +84,21 @@ function App() {
           <ambientLight intensity={0.4} />
           <directionalLight color="white" position={[0, 5, 5]} />
           <directionalLight color="white" position={[5, 5, 5]} />
-          <directionalLight color="white" position={[5, 0, 5]} />
-          <directionalLight color="white" position={[0, 5, 5]} />
+          <directionalLight color="red" position={[5, 0, 5]} />
+          <directionalLight color="blue" position={[0, 5, 5]} />
+          <SlotGroup>
+            <SlotItem>
+              <Draggable rotatesWithCursor>
+                <SpellCard3dModel />
+              </Draggable>
+            </SlotItem>
+            <SlotSlot>
+              <SpellSlot3dModel />
+            </SlotSlot>
+          </SlotGroup>
           <Draggable>
             <Test3dModel />
           </Draggable>
-          <SpellSlot3dModel />
-          {/* <OrbitControls /> */}
         </Canvas>
       </div>
     </div>

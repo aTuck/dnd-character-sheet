@@ -1,80 +1,153 @@
-import React, { useState, useRef } from "react";
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { CSS } from "../statics/values";
+import * as THREE from "three";
 
-function Draggable(props) {
-  const { children } = props;
+const Draggable = forwardRef(
+  ({ children, rotatesWithCursor, onPickup, onSlot }, ref) => {
+    const { pointer, size, camera } = useThree();
+    const [isDragging, setIsDragging] = useState(false);
+    const initialPointerRef = useRef([0, 0]);
+    const initialModelRef = useRef([0, 0]);
+    const initialModelRotationRef = useRef([0, 0]);
+    const draggableRef = useRef();
+    useImperativeHandle(ref, () => draggableRef.current);
 
-  const [isDragging, setIsDragging] = useState(false);
-
-  const ref = useRef();
-  const initialMouse = useRef([0, 0]);
-  const initialModelPos = useRef([0, 0]);
-
-  const { pointer, size, camera } = useThree();
-
-  const handlePointerDown = (event) => {
-    if (!isDragging) {
+    const handlePointerDown = (event) => {
       setIsDragging(true);
+      document.body.style.cursor = CSS.CursorStyles.GRABBING;
 
-      initialMouse.current = [pointer.x * size.width, pointer.y * size.height];
-      initialModelPos.current = [
-        ref.current.position.x,
-        ref.current.position.y,
-      ];
-    }
-  };
+      initialPointerRef.current.x = pointer.x;
+      initialPointerRef.current.y = pointer.y;
+      initialModelRef.current.x = draggableRef.current.position.x;
+      initialModelRef.current.y = draggableRef.current.position.y;
+      initialModelRotationRef.current.x = draggableRef.current.rotation.x;
+      initialModelRotationRef.current.y = draggableRef.current.rotation.y;
 
-  const handlePointerUp = () => {
-    setIsDragging(false);
-  };
+      if (onPickup) {
+        onPickup(draggableRef);
+      }
+    };
 
-  const handlePointerMove = (props) => {
-    // console.log("pointer move", props);
-  };
+    const handlePointerUp = () => {
+      setIsDragging(false);
+      document.body.style.cursor = CSS.CursorStyles.GRAB;
 
-  useFrame(({ gl, scene, camera, pointer, size, viewport, clock }) => {
-    if (isDragging) {
-      const currentMouseX = pointer.x * size.width;
-      const currentMouseY = pointer.y * size.height;
+      if (onSlot) {
+        onSlot(draggableRef.current);
+      }
+    };
 
-      const wratio = (size.width / window.screen.width) * 1.2;
-      const hratio = (size.height / window.screen.height) * 1.2;
-      console.log(wratio, hratio);
-      const deltaX = (currentMouseX - initialMouse.current[0]) * (1 - wratio);
-      const deltaY = (currentMouseY - initialMouse.current[1]) * (1 - hratio);
+    const handlePointerEnter = (props) => {
+      document.body.style.cursor = CSS.CursorStyles.GRAB;
+    };
 
-      ref.current.position.x = initialModelPos.current[0] + deltaX;
-      ref.current.position.y = initialModelPos.current[1] + deltaY;
+    const handlePointerLeave = (props) => {
+      document.body.style.cursor = CSS.CursorStyles.DEFAULT;
+    };
 
-      initialMouse.current = [currentMouseX, currentMouseY];
-      initialModelPos.current = [
-        ref.current.position.x,
-        ref.current.position.y,
-      ];
-    } else {
-      console.log("off");
-    }
-  });
+    useFrame(({ gl, scene, camera, pointer, size, viewport, clock }) => {
+      if (isDragging) {
+        const ndcX = (pointer.x / window.innerWidth) * 2 - 1;
+        const ndcY = -(pointer.y / window.innerHeight) * 2 + 1;
+        console.log("NDC X:", ndcX, "NDC Y:", ndcY);
 
-  return (
-    <group
-      ref={ref}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerMissed={handlePointerUp}
-    >
-      <mesh>
-        <boxGeometry args={[10, 10, 10]} />
-        <meshBasicMaterial
-          color="blue"
-          transparent={true}
-          opacity={0.2}
-          wireframe={true}
-        />
-      </mesh>
-      {children}
-    </group>
-  );
-}
+        const currentWorldPosX = (ndcX * (camera.right - camera.left)) / 2;
+        const currentWorldPosY = (ndcY * (camera.top - camera.bottom)) / 2;
+        console.log(
+          "currentWorldPos X:",
+          currentWorldPosX,
+          "currentWorldPos Y:",
+          currentWorldPosY
+        );
+
+        const ndcX2 = (initialPointerRef.current.x / window.innerWidth) * 2 - 1;
+        const ndcY2 =
+          -(initialPointerRef.current.y / window.innerHeight) * 2 + 1;
+        console.log("NDC X2:", ndcX2, "NDC Y2:", ndcY2);
+        const initialWorldPosX = (ndcX2 * (camera.right - camera.left)) / 2;
+        const initialWorldPosY = (ndcY2 * (camera.top - camera.bottom)) / 2;
+        console.log(
+          "Initial World Pos X:",
+          initialWorldPosX,
+          "Initial World Pos Y:",
+          initialWorldPosY
+        );
+
+        const Xscale = 233;
+        const Yscale = 131;
+        const deltaX = (currentWorldPosX - initialWorldPosX) * Xscale;
+        const deltaY = -(currentWorldPosY - initialWorldPosY) * Yscale;
+        console.log("Delta X:", deltaX, "Delta Y:", deltaY);
+
+        console.log("Before update:", draggableRef.current.position);
+        draggableRef.current.position.x += deltaX;
+        draggableRef.current.position.y += deltaY;
+        console.log("After update:", draggableRef.current.position);
+
+        if (rotatesWithCursor) {
+          const rotationDamping = 0.9; // Closer to 1 is less damping, closer to 0 is more damping
+          const rotationFactor = 0.075; // Smaller number reduces the immediate rotation effect
+
+          const maxRotation = 0.98;
+          draggableRef.current.rotation.x = Math.max(
+            Math.min(
+              draggableRef.current.rotation.x + -deltaY * rotationFactor,
+              maxRotation
+            ),
+            -maxRotation
+          );
+          draggableRef.current.rotation.y = Math.max(
+            Math.min(
+              draggableRef.current.rotation.y + -deltaX * rotationFactor,
+              maxRotation
+            ),
+            -maxRotation
+          );
+          console.log(deltaY * rotationFactor);
+          console.log(deltaX * rotationFactor);
+          draggableRef.current.rotation.x *= rotationDamping;
+          draggableRef.current.rotation.y *= rotationDamping;
+
+          initialModelRotationRef.current.x = draggableRef.current.rotation.x;
+          initialModelRotationRef.current.y = draggableRef.current.rotation.y;
+        }
+        initialPointerRef.current.x = pointer.x;
+        initialPointerRef.current.y = pointer.y;
+        initialModelRef.current.x = draggableRef.current.position.x;
+        initialModelRef.current.y = draggableRef.current.position.y;
+      }
+      draggableRef.current.rotation.x *= 0.9;
+      draggableRef.current.rotation.y *= 0.9;
+    });
+
+    return (
+      <group
+        position={[-100, 0, 0]}
+        ref={draggableRef}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+      >
+        <mesh>
+          <boxGeometry args={[10, 10, 10]} />
+          <meshBasicMaterial
+            color="blue"
+            transparent={true}
+            opacity={0.2}
+            wireframe={true}
+          />
+        </mesh>
+        {children}
+      </group>
+    );
+  }
+);
 
 export default Draggable;
