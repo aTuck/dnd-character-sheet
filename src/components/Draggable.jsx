@@ -9,16 +9,34 @@ import { CSS } from "../statics/values";
 import * as THREE from "three";
 
 const Draggable = forwardRef(
-  ({ children, rotatesWithCursor, onPickup, onSlot, onMove }, ref) => {
+  (
+    {
+      children,
+      rotatesWithCursor,
+      position,
+      onPickup,
+      onSlot,
+      onMove,
+      sendModelToParent,
+      ...props
+    },
+    ref
+  ) => {
     const { pointer } = useThree();
     const [isDragging, setIsDragging] = useState(false);
+    const [childModelId, setChildModelId] = useState(null);
     const initialPointerRef = useRef([0, 0]);
     const initialModelRef = useRef([0, 0]);
     const initialModelRotationRef = useRef([0, 0]);
     const draggableRef = useRef();
     useImperativeHandle(ref, () => draggableRef.current);
 
-    const handlePointerDown = (event) => {
+    const handleReceiveModel = (modelId, model) => {
+      setChildModelId(modelId);
+      sendModelToParent(modelId, draggableRef.current);
+    };
+
+    const handlePointerDown = () => {
       setIsDragging(true);
       document.body.style.cursor = CSS.CursorStyles.GRABBING;
 
@@ -30,7 +48,7 @@ const Draggable = forwardRef(
       initialModelRotationRef.current.y = draggableRef.current.rotation.y;
 
       if (onPickup) {
-        onPickup(draggableRef);
+        onPickup(draggableRef, childModelId || "no-model-id-in-draggable");
       }
     };
 
@@ -39,7 +57,7 @@ const Draggable = forwardRef(
       document.body.style.cursor = CSS.CursorStyles.GRAB;
 
       if (onSlot) {
-        onSlot(draggableRef);
+        onSlot(draggableRef, childModelId || "no-model-id-in-draggable");
       }
     };
 
@@ -54,7 +72,7 @@ const Draggable = forwardRef(
     useFrame(({ gl, scene, camera, pointer, size, viewport, clock }) => {
       if (isDragging) {
         if (onMove) {
-          onMove(draggableRef);
+          onMove(draggableRef, childModelId || "no-model-id-in-draggable");
         }
         const ndcX = (pointer.x / window.innerWidth) * 2 - 1;
         const ndcY = -(pointer.y / window.innerHeight) * 2 + 1;
@@ -131,7 +149,7 @@ const Draggable = forwardRef(
 
     return (
       <group
-        position={[-100, 0, 0]}
+        position={position || [-100, 0, 0]}
         ref={draggableRef}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
@@ -147,7 +165,12 @@ const Draggable = forwardRef(
             wireframe={true}
           />
         </mesh>
-        {children}
+        {React.Children.map(children, (child) =>
+          React.cloneElement(child, {
+            sendModelToParent: handleReceiveModel,
+            ...props,
+          })
+        )}
       </group>
     );
   }

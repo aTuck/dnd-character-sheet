@@ -1,19 +1,27 @@
-import React, { useState, useEffect, useMemo, useRef, forwardRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  memo,
+} from "react";
 import Model from "./Model";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 import * as THREE from "three";
-import { useModelRegistry } from "../../hooks/useModelRegistry";
-import { v4 as uuidv4 } from "uuid";
-import { groupBy } from "lodash";
+import { nanoid } from "nanoid";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 
-const SpellCard3dModel = forwardRef(({ position }, ref) => {
+const SpellCard3dModel = memo(({ setModel, sendModelToParent }) => {
+  const modelId = useMemo(() => `spell-card-${nanoid(8)}`, []);
   const modelRef = useRef();
-  const modelId = useMemo(() => `spell-card-${uuidv4()}`, []);
-  const [model, setModel] = useModelRegistry(modelId);
 
   const [geometry, setGeometry] = useState();
   const [texture, setTexture] = useState();
+  const [textMesh, setTextMesh] = useState();
 
   useEffect(() => {
     const spellSlotGeometry = new THREE.BoxGeometry(65, 80, 0.5);
@@ -41,18 +49,32 @@ const SpellCard3dModel = forwardRef(({ position }, ref) => {
       console.log(`${modelId}: loaded texture`, texture);
     });
 
-    setModel(modelId, modelRef.current);
-  }, []);
+    const fontLoader = new FontLoader();
+    fontLoader.load("./textures/helvetiker_regular.typeface.json", (font) => {
+      const textGeometry = new TextGeometry(modelId, {
+        font: font,
+        size: 4,
+        depth: 1,
+        curveSegments: 12,
+      });
+      const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const mesh = new THREE.Mesh(textGeometry, textMaterial);
+      mesh.position.set(-30, 0, 1); // Adjust the position as needed
+      setTextMesh(mesh);
+    });
+  }, [modelId, modelRef]);
 
   useEffect(() => {
-    // setModel(modelId, modelRef.current);
-  }, [geometry, texture, modelId, setModel]);
+    setModel(modelId, modelRef.current);
+    sendModelToParent(modelId, modelRef.current);
+  }, [geometry, texture, modelId, modelRef]);
 
   return (
     <>
       {geometry && (
         <group ref={modelRef}>
           <Model geometry={geometry} texture={texture} />
+          {textMesh && <primitive object={textMesh} />}
         </group>
       )}
     </>

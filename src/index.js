@@ -2,15 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./components/app/App.js";
-import { ModelRegistryProvider } from "./hooks/useModelRegistry";
+import { SlotItemRegistryProvider } from "./hooks/useSlotItemRegistry.jsx";
+import { SlotSlotRegistryProvider } from "./hooks/useSlotSlotRegistry.jsx";
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ModelRegistryProvider>
-      <App />
-    </ModelRegistryProvider>
+    <SlotItemRegistryProvider>
+      <SlotSlotRegistryProvider>
+        <App />
+      </SlotSlotRegistryProvider>
+    </SlotItemRegistryProvider>
   </React.StrictMode>
 );
 

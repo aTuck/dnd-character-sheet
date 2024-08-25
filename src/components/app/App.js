@@ -1,7 +1,7 @@
 import "./App.css";
 import React, { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Stats } from "@react-three/drei";
 
 import SpellCard from "../spells/SpellCard";
 import Test3dModel from "../3dModels/Test3dModel";
@@ -88,6 +88,11 @@ function App() {
           <directionalLight color="blue" position={[0, 5, 5]} />
           <SlotGroup>
             <SlotItem>
+              <Draggable rotatesWithCursor position={[20, 0, 0]}>
+                <SpellCard3dModel />
+              </Draggable>
+            </SlotItem>
+            <SlotItem>
               <Draggable rotatesWithCursor>
                 <SpellCard3dModel />
               </Draggable>
@@ -99,6 +104,7 @@ function App() {
           <Draggable>
             <Test3dModel />
           </Draggable>
+          <Stats />
         </Canvas>
       </div>
     </div>
