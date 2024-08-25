@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef, forwardRef } from "react";
 import Model from "./Model";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
@@ -7,7 +7,7 @@ import { useModelRegistry } from "../../hooks/useModelRegistry";
 import { v4 as uuidv4 } from "uuid";
 import { groupBy } from "lodash";
 
-function SpellCard3dModel() {
+const SpellCard3dModel = forwardRef(({ position }, ref) => {
   const modelRef = useRef();
   const modelId = useMemo(() => `spell-card-${uuidv4()}`, []);
   const [model, setModel] = useModelRegistry(modelId);
@@ -51,10 +51,12 @@ function SpellCard3dModel() {
   return (
     <>
       {geometry && (
-        <Model ref={modelRef} geometry={geometry} texture={texture} />
+        <group ref={modelRef}>
+          <Model geometry={geometry} texture={texture} />
+        </group>
       )}
     </>
   );
-}
+});
 
 export default SpellCard3dModel;
