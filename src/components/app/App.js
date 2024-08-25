@@ -100,6 +100,9 @@ function App() {
             <SlotSlot>
               <SpellSlot3dModel />
             </SlotSlot>
+            <SlotSlot>
+              <SpellSlot3dModel position={[100, 0, 0]} />
+            </SlotSlot>
           </SlotGroup>
           <Draggable>
             <Test3dModel />

@@ -13,10 +13,10 @@ import * as THREE from "three";
 import Model from "./Model";
 
 const SpellSlot3dModel = forwardRef(
-  ({ setModel, sendModelToParent, position, isGlowing }, ref) => {
+  ({ setModel, sendSlotModelToParent, position, isGlowing }, ref) => {
     const modelId = useMemo(() => `spell-slot-${nanoid(8)}`, []);
     const modelRef = useRef();
-    useImperativeHandle(ref, () => modelRef.current);
+    // useImperativeHandle(ref, () => modelRef.current);
 
     const [geometry, setGeometry] = useState();
     const [texture, setTexture] = useState();
@@ -45,14 +45,13 @@ const SpellSlot3dModel = forwardRef(
     }, []);
 
     useEffect(() => {
-      setModel(modelId, modelRef.current);
-      sendModelToParent(modelId, modelRef.current);
+      sendSlotModelToParent(modelId, modelRef.current);
     }, [geometry, texture, modelId, modelRef]);
 
     return (
       <>
         {geometry && (
-          <group ref={modelRef} position={position || [0, 0, 0]}>
+          <group ref={modelRef} position={position}>
             <Model
               geometry={geometry}
               texture={texture}
