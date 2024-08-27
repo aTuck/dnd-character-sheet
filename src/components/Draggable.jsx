@@ -13,6 +13,7 @@ const Draggable = forwardRef(
     {
       children,
       rotatesWithCursor,
+      scale,
       position,
       onPickup,
       onSlot,
@@ -38,7 +39,7 @@ const Draggable = forwardRef(
 
     const handlePointerDown = () => {
       setIsDragging(true);
-      document.body.style.cursor = CSS.CursorStyles.GRABBING;
+      document.body.style.cursor = 'url("./textures/dnd-cursor.png"), auto';
 
       initialPointerRef.current.x = pointer.x;
       initialPointerRef.current.y = pointer.y;
@@ -54,7 +55,7 @@ const Draggable = forwardRef(
 
     const handlePointerUp = () => {
       setIsDragging(false);
-      document.body.style.cursor = CSS.CursorStyles.GRAB;
+      document.body.style.cursor = "textures/dnd-cursor.png";
 
       if (onSlot) {
         onSlot(draggableRef, childModelId || "no-model-id-in-draggable");
@@ -62,11 +63,11 @@ const Draggable = forwardRef(
     };
 
     const handlePointerEnter = (props) => {
-      document.body.style.cursor = CSS.CursorStyles.GRAB;
+      document.body.style.cursor = "textures/dnd-cursor.png";
     };
 
     const handlePointerLeave = (props) => {
-      document.body.style.cursor = CSS.CursorStyles.DEFAULT;
+      document.body.style.cursor = "textures/dnd-cursor.png";
     };
 
     useFrame(({ gl, scene, camera, pointer, size, viewport, clock }) => {
@@ -149,6 +150,7 @@ const Draggable = forwardRef(
 
     return (
       <group
+        scale={scale || [1, 1, 1]}
         position={position || [-100, 0, 0]}
         ref={draggableRef}
         onPointerDown={handlePointerDown}

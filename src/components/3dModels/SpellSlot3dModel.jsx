@@ -13,7 +13,7 @@ import * as THREE from "three";
 import Model from "./Model";
 
 const SpellSlot3dModel = forwardRef(
-  ({ setModel, sendSlotModelToParent, position, isGlowing }, ref) => {
+  ({ setModel, sendSlotModelToParent, position, checkIsGlowing }, ref) => {
     const modelId = useMemo(() => `spell-slot-${nanoid(8)}`, []);
     const modelRef = useRef();
     // useImperativeHandle(ref, () => modelRef.current);
@@ -55,7 +55,7 @@ const SpellSlot3dModel = forwardRef(
             <Model
               geometry={geometry}
               texture={texture}
-              isGlowing={isGlowing}
+              isGlowing={checkIsGlowing(modelId)}
             />
           </group>
         )}

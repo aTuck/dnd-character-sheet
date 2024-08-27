@@ -7,15 +7,11 @@ import { useSlotItemRegistry } from "../hooks/useSlotItemRegistry";
 const SlotGroup = ({ children }) => {
   const itemsRef = useRef({});
   const slotsRef = useRef({});
-  const slotSlotRef = useRef();
 
-  const [isGlowing, setIsGlowing] = useState(false);
+  const [isGlowingRegistry, setIsGlowingRegistry] = useState({});
   const [slotMappings, setSlotMappings] = useState({});
-  const [itemPositions, setItemPositions] = useState({});
-  const [slotPositions, setSlotPositions] = useState({});
-
-  const [slotItems, setSlotItemById, setSlotItemIsSlottedById] =
-    useSlotItemRegistry();
+  const [itemPositionsOnLoad, setItemPositionsOnLoad] = useState({});
+  const [slotPositionsOnLoad, setSlotPositionsOnLoad] = useState({});
 
   const handleOnPickup = (itemRef, itemId) => {
     Object.keys(slotMappings).forEach((slotId) => {
@@ -40,8 +36,6 @@ const SlotGroup = ({ children }) => {
         );
         if (itemBox.intersectsBox(slotBox)) {
           console.log(`slotted ${itemId}!`);
-          setSlotItemIsSlottedById(itemId, true);
-
           setSlotMappings({ ...slotMappings, [slotId]: itemId });
         }
       });
@@ -54,14 +48,21 @@ const SlotGroup = ({ children }) => {
       const slotBox = new THREE.Box3().setFromObject(slotsRef.current[slotId]);
       const itemBox = new THREE.Box3().setFromObject(itemRef.current);
       if (itemBox.intersectsBox(slotBox)) {
-        setIsGlowing(true);
+        setIsGlowingRegistry((registry) => ({
+          ...registry,
+          [slotId]: { ...registry[slotId], [itemId]: true },
+        }));
       } else {
-        setIsGlowing(false);
+        setIsGlowingRegistry((registry) => ({
+          ...registry,
+          [slotId]: { ...registry[slotId], [itemId]: false },
+        }));
       }
+      console.log(isGlowingRegistry);
     });
   };
 
-  const handleReceiveModel = (modelId, modelRef) => {
+  const handleReceiveItemModel = (modelId, modelRef) => {
     itemsRef.current = { ...itemsRef.current, [modelId]: modelRef };
   };
 
@@ -87,7 +88,7 @@ const SlotGroup = ({ children }) => {
         }
       }
 
-      setItemPositions(newItemPositions);
+      setItemPositionsOnLoad(newItemPositions);
     };
 
     const updateSlotPositions = () => {
@@ -105,7 +106,7 @@ const SlotGroup = ({ children }) => {
         }
       }
 
-      setSlotPositions(newSlotPositions);
+      setSlotPositionsOnLoad(newSlotPositions);
     };
 
     updateItemPositions();
@@ -122,17 +123,16 @@ const SlotGroup = ({ children }) => {
           const stiffness = 0.1; // How strong the spring is (higher = stronger, faster)
           const damping = 0.7; // Damping factor to slow down the spring (0-1, closer to 1 = slower)
 
-          const slotPosition = slotPositions[slotId];
-          console.log(item.position);
           const positionDifference = new THREE.Vector3().subVectors(
-            slotPositions[slotId],
-            itemPositions[itemId]
+            slotPositionsOnLoad[slotId],
+            itemPositionsOnLoad[itemId]
           );
+
           // Apply spring formula: velocity += difference * stiffness; position += velocity; velocity *= damping;
           const velocity = positionDifference.multiplyScalar(stiffness);
           item.position.add(velocity);
-          item.position.multiplyScalar(damping);
-          console.log("updated", item.position);
+          item.position.z += 0.75;
+          velocity.multiplyScalar(damping);
         }
       }
     });
@@ -141,17 +141,23 @@ const SlotGroup = ({ children }) => {
   const clonedChildren = React.Children.map(children, (child) => {
     if (child.type.displayName === "SlotItem") {
       return React.cloneElement(child, {
-        setModel: setSlotItemById,
         onPickup: handleOnPickup,
         onSlot: handleOnSlot,
         onMove: handleOnMove,
-        sendModelToParent: handleReceiveModel,
+        sendModelToParent: handleReceiveItemModel,
       });
     }
     if (child.type.displayName === "SlotSlot") {
       return React.cloneElement(child, {
         setModel: () => {},
-        isGlowing: isGlowing,
+        checkIsGlowing: (modelId) => {
+          return (
+            isGlowingRegistry[modelId] &&
+            Object.values(isGlowingRegistry[modelId]).some(
+              (value) => value === true
+            )
+          );
+        },
         sendSlotModelToParent: handleReceiveSlotModel,
       });
     }

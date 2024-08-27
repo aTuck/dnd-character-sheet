@@ -15,7 +15,7 @@ import { nanoid } from "nanoid";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 
-const SpellCard3dModel = memo(({ setModel, sendModelToParent }) => {
+const SpellCard3dModel = memo(({ sendModelToParent }) => {
   const modelId = useMemo(() => `spell-card-${nanoid(8)}`, []);
   const modelRef = useRef();
 
@@ -65,7 +65,6 @@ const SpellCard3dModel = memo(({ setModel, sendModelToParent }) => {
   }, [modelId, modelRef]);
 
   useEffect(() => {
-    setModel(modelId, modelRef.current);
     sendModelToParent(modelId, modelRef.current);
   }, [geometry, texture, modelId, modelRef]);
 
