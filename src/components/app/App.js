@@ -88,25 +88,17 @@ function App() {
           <directionalLight color="blue" position={[0, 5, 5]} />
           <SlotGroup>
             <SlotItem>
-              <Draggable
-                rotatesWithCursor
-                position={[20, 0, 0]}
-                scale={[0.75, 0.75, 0.75]}
-              >
+              <Draggable rotatesWithCursor position={[20, 0, 0]}>
                 <SpellCard3dModel />
               </Draggable>
             </SlotItem>
             <SlotItem>
-              <Draggable
-                rotatesWithCursor
-                position={[100, 0, 0]}
-                scale={[0.75, 0.75, 0.75]}
-              >
+              <Draggable rotatesWithCursor position={[100, 0, 0]}>
                 <SpellCard3dModel />
               </Draggable>
             </SlotItem>
             <SlotItem>
-              <Draggable rotatesWithCursor scale={[0.75, 0.75, 0.75]}>
+              <Draggable rotatesWithCursor>
                 <SpellCard3dModel />
               </Draggable>
             </SlotItem>
@@ -120,9 +112,7 @@ function App() {
               <SpellSlot3dModel position={[100, 50, 0]} />
             </SlotSlot>
           </SlotGroup>
-          <Draggable>
-            <Test3dModel />
-          </Draggable>
+          <Test3dModel position={[-100, 0, 0]} />
           <Stats />
         </Canvas>
       </div>

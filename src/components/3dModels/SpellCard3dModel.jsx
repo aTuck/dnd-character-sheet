@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  memo,
-} from "react";
+import React, { useState, useEffect, useMemo, useRef, memo } from "react";
 import Model from "./Model";
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";

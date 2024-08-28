@@ -9,11 +9,22 @@ import React, {
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import { nanoid } from "nanoid";
 import * as THREE from "three";
+import { Html } from "@react-three/drei";
 
 import Model from "./Model";
 
 const SpellSlot3dModel = forwardRef(
-  ({ setModel, sendSlotModelToParent, position, checkIsGlowing }, ref) => {
+  (
+    {
+      onCast,
+      sendSlotModelToParent,
+      position,
+      checkIsGlowing,
+      checkRenderCastButton,
+      slotLevel,
+    },
+    ref
+  ) => {
     const modelId = useMemo(() => `spell-slot-${nanoid(8)}`, []);
     const modelRef = useRef();
     // useImperativeHandle(ref, () => modelRef.current);
@@ -57,6 +68,21 @@ const SpellSlot3dModel = forwardRef(
               texture={texture}
               isGlowing={checkIsGlowing(modelId)}
             />
+            {checkRenderCastButton(modelId) && (
+              <Html position={[0, 2, 0]}>
+                <button
+                  onClick={() => onCast(modelId, slotLevel)}
+                  style={{
+                    position: "absolute",
+                    top: "230px", // Position the button above the SlotSlot
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  Cast
+                </button>
+              </Html>
+            )}
           </group>
         )}
       </>

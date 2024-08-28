@@ -1,6 +1,7 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { v4 as uuid } from "uuid";
 import { useSlotItemRegistry } from "../hooks/useSlotItemRegistry";
 
@@ -8,10 +9,11 @@ const SlotGroup = ({ children }) => {
   const itemsRef = useRef({});
   const slotsRef = useRef({});
 
-  const [isGlowingRegistry, setIsGlowingRegistry] = useState({});
   const [slotMappings, setSlotMappings] = useState({});
+  const [isGlowingRegistry, setIsGlowingRegistry] = useState({});
   const [itemPositionsOnLoad, setItemPositionsOnLoad] = useState({});
   const [slotPositionsOnLoad, setSlotPositionsOnLoad] = useState({});
+  const [isLocked, setIsLocked] = useState(false);
 
   const handleOnPickup = (itemRef, itemId) => {
     Object.keys(slotMappings).forEach((slotId) => {
@@ -20,7 +22,7 @@ const SlotGroup = ({ children }) => {
         console.log(`${itemId} was slotted, picked up`);
         const item = itemsRef.current[itemId];
         if (item) {
-          setSlotMappings({ ...slotMappings, [slotId]: "" });
+          setSlotMappings({ ...slotMappings, [slotId]: null });
         }
       }
     });
@@ -58,8 +60,15 @@ const SlotGroup = ({ children }) => {
           [slotId]: { ...registry[slotId], [itemId]: false },
         }));
       }
-      console.log(isGlowingRegistry);
     });
+  };
+
+  const handleOnCast = (slotId, slotLevel) => {
+    console.log(slotId, slotMappings);
+    const itemid = slotMappings[slotId];
+    const item = itemsRef.current[slotMappings[slotId]];
+    console.log(itemid, itemsRef.current, "asdf");
+    console.log("casting", item);
   };
 
   const handleReceiveItemModel = (modelId, modelRef) => {
@@ -138,6 +147,21 @@ const SlotGroup = ({ children }) => {
     });
   });
 
+  const checkIsGlowing = (modelId) => {
+    return (
+      isGlowingRegistry[modelId] &&
+      Object.values(isGlowingRegistry[modelId]).some((value) => value === true)
+    );
+  };
+
+  const checkRenderCastButton = (slotId) => {
+    if (slotMappings[slotId] != null) {
+      return true;
+    }
+
+    return false;
+  };
+
   const clonedChildren = React.Children.map(children, (child) => {
     if (child.type.displayName === "SlotItem") {
       return React.cloneElement(child, {
@@ -148,18 +172,17 @@ const SlotGroup = ({ children }) => {
       });
     }
     if (child.type.displayName === "SlotSlot") {
-      return React.cloneElement(child, {
-        setModel: () => {},
-        checkIsGlowing: (modelId) => {
-          return (
-            isGlowingRegistry[modelId] &&
-            Object.values(isGlowingRegistry[modelId]).some(
-              (value) => value === true
-            )
-          );
-        },
-        sendSlotModelToParent: handleReceiveSlotModel,
-      });
+      return (
+        <>
+          {React.cloneElement(child, {
+            setModel: () => {},
+            onCast: handleOnCast,
+            checkIsGlowing: checkIsGlowing,
+            checkRenderCastButton: checkRenderCastButton,
+            sendSlotModelToParent: handleReceiveSlotModel,
+          })}
+        </>
+      );
     }
     return child;
   });
