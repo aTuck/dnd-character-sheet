@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import Model from "./Model";
-import { TextureLoader } from "three/src/loaders/TextureLoader";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { useFrame } from "@react-three/fiber";
-import { useThree } from "@react-three/fiber";
+import { TextureLoader } from "three";
+// @ts-ignore
+import { STLLoader } from "../../statics/STLLoader";
+import { useFrame, useThree } from "@react-three/fiber";
+// @ts-ignore
 import { getParticleSystem } from "../../getParticleSystem";
 import { Stars } from "@react-three/drei";
+import * as THREE from "three";
 
-function Test3dModel({ position }) {
-  const [geometry, setGeometry] = useState();
-  const [fireTexture, setFireTexture] = useState();
-  const emitterRef = useRef();
-  const fireEffectRef = useRef();
-  const starsRef = useRef();
+interface Test3dModelProps {
+  position: [number, number, number];
+}
+
+const Test3dModel: React.FC<Test3dModelProps> = ({ position }) => {
+  const [geometry, setGeometry] = useState<THREE.BufferGeometry | null>(null);
+  const [fireTexture, setFireTexture] = useState<THREE.Texture | null>(null);
+  const emitterRef = useRef<THREE.Group | null>(null);
+  const fireEffectRef = useRef<any>(null); // If possible, type this more specifically
+  const starsRef = useRef<THREE.Points | null>(null);
   const { scene, camera } = useThree();
 
   useEffect(() => {
     const loader = new STLLoader();
+    // @ts-ignore
     loader.load("./geometries/test.stl", (geo) => {
       setGeometry(geo);
       console.log("loaded stl geometry", geo);
@@ -34,12 +41,11 @@ function Test3dModel({ position }) {
       });
       console.log(texture);
     });
-  }, []);
+  }, [camera, scene]);
 
   useFrame(() => {
     if (fireEffectRef.current) {
       fireEffectRef.current.update(0.016);
-      // console.log(fireEffectRef.current);
     }
 
     if (starsRef.current) {
@@ -60,6 +66,6 @@ function Test3dModel({ position }) {
       />
     </group>
   );
-}
+};
 
 export default Test3dModel;

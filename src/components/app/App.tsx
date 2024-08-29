@@ -1,32 +1,24 @@
 import "./App.css";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stats } from "@react-three/drei";
 
-import SpellCard from "../spells/SpellCard";
+// import SpellCard from "../spells/SpellCard";
 import Test3dModel from "../3dModels/Test3dModel";
 import SpellSlot3dModel from "../3dModels/SpellSlot3dModel";
 import Draggable from "../Draggable";
-import Slottable from "../Slottable";
 import SpellCard3dModel from "../3dModels/SpellCard3dModel";
-
+import { useCharacter } from "../../hooks/useCharacter";
 import * as THREE from "three";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+// @ts-ignore
 import SlotGroup from "../SlotGroup";
 import SlotItem from "../SlotItem";
 import SlotSlot from "../SlotSlot";
+// @ts-ignore
 
 function App() {
-  const [isGlowing, setIsGlowing] = useState(false);
-
-  const handleSlot = (card, slot) => {
-    console.log("Card slotted!", card, slot);
-  };
-
-  const handleHoveringEffect = (object) => {
-    setIsGlowing(true);
-  };
-
+  const characterContext = useCharacter();
+  const character = characterContext.character;
   return (
     <div
       style={{
@@ -59,7 +51,20 @@ function App() {
         </button>
         <button onClick={() => console.log("Warlock clicked")}>Warlock</button>
         <button onClick={() => console.log("Wizard clicked")}>Wizard</button>
-        <SpellCard />
+        {character && (
+          <div>
+            <h1>{character.basic_info.name}</h1>
+            <p>Class: {character.basic_info.class}</p>
+            <p>Level: {character.basic_info.level}</p>
+            <p>
+              Strength Modifier:{" "}
+              {character.derived.ability_modifiers.strength_modifier}
+            </p>
+            <p>Armor Class: {character.armor_class}</p>
+            <p>Spell Save DC: {character.spellcasting.spell_save_dc}</p>
+          </div>
+        )}
+        {/* <SpellCard /> */}
       </div>
 
       <div

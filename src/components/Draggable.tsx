@@ -3,12 +3,38 @@ import React, {
   useRef,
   forwardRef,
   useImperativeHandle,
+  ReactNode,
+  MutableRefObject,
 } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { CSS } from "../statics/values";
 import * as THREE from "three";
 
-const Draggable = forwardRef(
+interface DraggableProps {
+  children: ReactNode;
+  rotatesWithCursor?: boolean;
+  scale?: [number, number, number];
+  position?: [number, number, number];
+  onPickup?: (
+    ref: MutableRefObject<THREE.Group | null>,
+    modelId: string
+  ) => void;
+  onSlot?: (ref: MutableRefObject<THREE.Group | null>, modelId: string) => void;
+  onMove?: (ref: MutableRefObject<THREE.Group | null>, modelId: string) => void;
+  sendModelToParent?: (
+    modelId: string | null,
+    ref: MutableRefObject<THREE.Group | null>
+  ) => void;
+  [key: string]: any; // Allow additional props
+}
+
+interface ChildProps {
+  sendModelToParent?: (
+    modelId: string | null,
+    ref: MutableRefObject<THREE.Group | null>
+  ) => void;
+}
+
+const Draggable = forwardRef<THREE.Group, DraggableProps>(
   (
     {
       children,
@@ -18,23 +44,27 @@ const Draggable = forwardRef(
       onPickup,
       onSlot,
       onMove,
-      sendModelToParent,
       ...props
     },
     ref
   ) => {
-    const { pointer } = useThree();
+    const { pointer, camera } = useThree();
     const [isDragging, setIsDragging] = useState(false);
-    const [childModelId, setChildModelId] = useState(null);
-    const initialPointerRef = useRef([0, 0]);
-    const initialModelRef = useRef([0, 0]);
-    const initialModelRotationRef = useRef([0, 0]);
-    const draggableRef = useRef();
-    useImperativeHandle(ref, () => draggableRef.current);
+    const [childModelId, setChildModelId] = useState<string | null>(null);
+    const initialPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+    const initialModelRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+    const initialModelRotationRef = useRef<{ x: number; y: number }>({
+      x: 0,
+      y: 0,
+    });
+    const draggableRef = useRef<THREE.Group | null>(null);
+    useImperativeHandle(ref, () => draggableRef.current!);
 
-    const handleReceiveModel = (modelId, model) => {
+    const handleReceiveModel = (modelId: string | null, model: any) => {
       setChildModelId(modelId);
-      sendModelToParent(modelId, draggableRef.current);
+      if (props.sendModelToParent && draggableRef.current) {
+        props.sendModelToParent(modelId, draggableRef);
+      }
     };
 
     const handlePointerDown = () => {
@@ -43,12 +73,12 @@ const Draggable = forwardRef(
 
       initialPointerRef.current.x = pointer.x;
       initialPointerRef.current.y = pointer.y;
-      initialModelRef.current.x = draggableRef.current.position.x;
-      initialModelRef.current.y = draggableRef.current.position.y;
-      initialModelRotationRef.current.x = draggableRef.current.rotation.x;
-      initialModelRotationRef.current.y = draggableRef.current.rotation.y;
+      initialModelRef.current.x = draggableRef.current?.position.x || 0;
+      initialModelRef.current.y = draggableRef.current?.position.y || 0;
+      initialModelRotationRef.current.x = draggableRef.current?.rotation.x || 0;
+      initialModelRotationRef.current.y = draggableRef.current?.rotation.y || 0;
 
-      if (onPickup) {
+      if (onPickup && draggableRef.current) {
         onPickup(draggableRef, childModelId || "no-model-id-in-draggable");
       }
     };
@@ -57,21 +87,25 @@ const Draggable = forwardRef(
       setIsDragging(false);
       document.body.style.cursor = "textures/dnd-cursor.png";
 
-      if (onSlot) {
+      if (onSlot && draggableRef.current) {
         onSlot(draggableRef, childModelId || "no-model-id-in-draggable");
       }
     };
 
-    const handlePointerEnter = (props) => {
+    const handlePointerEnter = () => {
       document.body.style.cursor = "textures/dnd-cursor.png";
     };
 
-    const handlePointerLeave = (props) => {
+    const handlePointerLeave = () => {
       document.body.style.cursor = "textures/dnd-cursor.png";
     };
 
-    useFrame(({ gl, scene, camera, pointer, size, viewport, clock }) => {
-      if (isDragging) {
+    useFrame(() => {
+      if (
+        isDragging &&
+        draggableRef.current &&
+        camera instanceof THREE.OrthographicCamera
+      ) {
         if (onMove) {
           onMove(draggableRef, childModelId || "no-model-id-in-draggable");
         }
@@ -96,8 +130,8 @@ const Draggable = forwardRef(
         draggableRef.current.position.y += deltaY;
 
         if (rotatesWithCursor) {
-          const rotationDamping = 0.9; // Closer to 1 is less damping, closer to 0 is more damping
-          const rotationFactor = 0.075; // Smaller number reduces the immediate rotation effect
+          const rotationDamping = 0.9;
+          const rotationFactor = 0.075;
 
           const maxRotation = 0.98;
           draggableRef.current.rotation.x = Math.max(
@@ -124,28 +158,11 @@ const Draggable = forwardRef(
         initialPointerRef.current.y = pointer.y;
         initialModelRef.current.x = draggableRef.current.position.x;
         initialModelRef.current.y = draggableRef.current.position.y;
-
-        // debug
-        // console.log("NDC X:", ndcX, "NDC Y:", ndcY);
-        // console.log(
-        //   "currentWorldPos X:",
-        //   currentWorldPosX,
-        //   "currentWorldPos Y:",
-        //   currentWorldPosY
-        // );
-        // console.log("NDC X2:", ndcX2, "NDC Y2:", ndcY2);
-        // console.log(
-        //   "Initial World Pos X:",
-        //   initialWorldPosX,
-        //   "Initial World Pos Y:",
-        //   initialWorldPosY
-        // );
-        // console.log("Delta X:", deltaX, "Delta Y:", deltaY);
-        // console.log("Before update:", draggableRef.current.position);
-        // console.log("After update:", draggableRef.current.position);
       }
-      draggableRef.current.rotation.x *= 0.9;
-      draggableRef.current.rotation.y *= 0.9;
+      if (draggableRef.current) {
+        draggableRef.current.rotation.x *= 0.9;
+        draggableRef.current.rotation.y *= 0.9;
+      }
     });
 
     return (
@@ -160,22 +177,22 @@ const Draggable = forwardRef(
       >
         <mesh>
           <boxGeometry args={[10, 10, 10]} />
-          <meshBasicMaterial
-            color="blue"
-            transparent={true}
-            opacity={0.2}
-            wireframe={true}
-          />
+          <meshBasicMaterial color="blue" transparent opacity={0.2} wireframe />
         </mesh>
-        {React.Children.map(children, (child) =>
-          React.cloneElement(child, {
-            sendModelToParent: handleReceiveModel,
-            ...props,
-          })
+        {React.Children.map(
+          children,
+          (child) =>
+            React.isValidElement(child) &&
+            React.cloneElement(child, {
+              ...props,
+              sendModelToParent: handleReceiveModel,
+            } as Record<string, any>)
         )}
       </group>
     );
   }
 );
+
+Draggable.displayName = "Draggable";
 
 export default Draggable;

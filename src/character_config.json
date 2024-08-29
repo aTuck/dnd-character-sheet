@@ -1,0 +1,187 @@
+{
+  "basic_info": {
+    "name": "Aragorn",
+    "class": "Ranger",
+    "level": 5,
+    "race": "Human",
+    "alignment": "Chaotic Good",
+    "background": "Outlander",
+    "experience_points": 6500
+  },
+  "abilities": {
+    "strength": 16,
+    "dexterity": 14,
+    "constitution": 14,
+    "intelligence": 12,
+    "wisdom": 13,
+    "charisma": 10
+  },
+  "skills": {
+    "acrobatics": {
+      "ability": "dexterity"
+    },
+    "animal_handling": {
+      "ability": "wisdom"
+    },
+    "arcana": {
+      "ability": "intelligence"
+    },
+    "athletics": {
+      "ability": "strength"
+    },
+    "deception": {
+      "ability": "charisma"
+    },
+    "history": {
+      "ability": "intelligence"
+    },
+    "insight": {
+      "ability": "wisdom"
+    },
+    "intimidation": {
+      "ability": "charisma"
+    },
+    "investigation": {
+      "ability": "intelligence"
+    },
+    "medicine": {
+      "ability": "wisdom"
+    },
+    "nature": {
+      "ability": "intelligence"
+    },
+    "perception": {
+      "ability": "wisdom"
+    },
+    "performance": {
+      "ability": "charisma"
+    },
+    "persuasion": {
+      "ability": "charisma"
+    },
+    "religion": {
+      "ability": "intelligence"
+    },
+    "sleight_of_hand": {
+      "ability": "dexterity"
+    },
+    "stealth": {
+      "ability": "dexterity"
+    },
+    "survival": {
+      "ability": "wisdom"
+    }
+  },
+  "hit_points": {
+    "hit_dice": "5d10",
+    "current": 38,
+    "temporary_hit_points": 0
+  },
+  "proficiencies": {
+    "armor": ["Light armor", "Medium armor", "Shields"],
+    "weapons": ["Simple weapons", "Martial weapons"],
+    "tools": ["Herbalism kit"],
+    "languages": ["Common", "Elvish"],
+    "skills": [
+      "acrobatics",
+      "animal_handling",
+      "athletics",
+      "nature",
+      "perception",
+      "stealth",
+      "survival"
+    ]
+  },
+  "equipment": {
+    "weapons": [
+      {
+        "name": "Longsword",
+        "quantity": 1
+      },
+      {
+        "name": "Longbow",
+        "quantity": 1
+      },
+      {
+        "name": "Arrows",
+        "quantity": 20
+      }
+    ],
+    "armor": [
+      {
+        "name": "Chain Shirt",
+        "armor_class": 13,
+        "stealth_disadvantage": false
+      },
+      {
+        "name": "Shield",
+        "armor_class": 2,
+        "stealth_disadvantage": false
+      }
+    ],
+    "tools": [
+      {
+        "name": "Herbalism Kit",
+        "quantity": 1
+      }
+    ],
+    "adventuring_gear": [
+      {
+        "name": "Backpack",
+        "quantity": 1
+      },
+      {
+        "name": "Rations",
+        "quantity": 10
+      },
+      {
+        "name": "Rope, Hemp",
+        "quantity": 1,
+        "length": "50 feet"
+      }
+    ],
+    "treasure": {
+      "cp": 0,
+      "sp": 10,
+      "gp": 50,
+      "pp": 0,
+      "gems": [
+        {
+          "name": "Ruby",
+          "value": 100
+        }
+      ]
+    }
+  },
+  "spellcasting": {
+    "spellcasting_ability": "Wisdom",
+    "spells_known": ["evocation-cure_wounds", "enchantment-bless"],
+    "spell_slots": {
+      "level_1": {
+        "total": 4,
+        "expended": 2
+      },
+      "level_2": {
+        "total": 2,
+        "expended": 0
+      }
+    }
+  },
+  "features_and_traits": [
+    {
+      "name": "Favored Enemy",
+      "description": "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them."
+    },
+    {
+      "name": "Natural Explorer",
+      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions."
+    }
+  ],
+  "personality_traits": {
+    "trait": "I’m driven by a wanderlust that led me away from home.",
+    "ideal": "Change. Life is like the seasons, in constant change, and we must change with it. (Chaotic)",
+    "bond": "An injury to the unspoiled wilderness of my home is an injury to me.",
+    "flaw": "I am slow to trust members of other races, tribes, and societies."
+  },
+  "backstory": "Aragorn, the son of Arathorn, was raised in the wilderness and has always felt a deep connection to nature. He learned the ways of the ranger and developed a strong sense of duty to protect the natural world from those who would destroy it."
+}
