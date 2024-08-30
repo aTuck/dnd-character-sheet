@@ -1,6 +1,7 @@
 export interface SpellSlot {
-  slot_id: string;
   slot_level: number;
+  total: number;
+  expended: number;
 }
 
 export interface Character {

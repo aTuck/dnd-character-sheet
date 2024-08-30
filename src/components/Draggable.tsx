@@ -60,10 +60,10 @@ const Draggable = forwardRef<THREE.Group, DraggableProps>(
     const draggableRef = useRef<THREE.Group | null>(null);
     useImperativeHandle(ref, () => draggableRef.current!);
 
-    const handleReceiveModel = (modelId: string | null, model: any) => {
+    const handleReceiveObject3D = (modelId: string | null, model: any) => {
       setChildModelId(modelId);
-      if (props.sendModelToParent && draggableRef.current) {
-        props.sendModelToParent(modelId, draggableRef);
+      if (props.sendCardObject3DToParent && draggableRef.current) {
+        props.sendCardObject3DToParent(modelId, draggableRef?.current);
       }
     };
 
@@ -185,7 +185,7 @@ const Draggable = forwardRef<THREE.Group, DraggableProps>(
             React.isValidElement(child) &&
             React.cloneElement(child, {
               ...props,
-              sendModelToParent: handleReceiveModel,
+              sendCardObject3DToParent: handleReceiveObject3D,
             } as Record<string, any>)
         )}
       </group>

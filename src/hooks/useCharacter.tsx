@@ -68,7 +68,7 @@ export const CharacterProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useCharacter = (): CharacterContext => {
+export const useCharacter = () => {
   const context = useContext(CharacterContext);
   if (!context) {
     throw new Error("useCharacter must be used within a CharacterProvider");

@@ -158,10 +158,12 @@
     "spells_known": ["evocation-cure_wounds", "enchantment-bless"],
     "spell_slots": {
       "level_1": {
+        "slot_level": 1,
         "total": 4,
         "expended": 2
       },
       "level_2": {
+        "slot_level": 2,
         "total": 2,
         "expended": 0
       }

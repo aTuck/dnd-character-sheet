@@ -1,10 +1,10 @@
 import React, { forwardRef, ReactElement } from "react";
 
-interface SlotItemProps extends React.HTMLAttributes<HTMLElement> {
+interface SpellCardProps extends React.HTMLAttributes<HTMLElement> {
   children: ReactElement;
 }
 
-const SlotItem = forwardRef<HTMLElement, SlotItemProps>(
+const SpellCard = forwardRef<HTMLElement, SpellCardProps>(
   ({ children, ...props }, ref) => {
     return React.cloneElement(children, {
       ref,
@@ -13,6 +13,6 @@ const SlotItem = forwardRef<HTMLElement, SlotItemProps>(
   }
 );
 
-SlotItem.displayName = "SlotItem";
+SpellCard.displayName = "SlotItem";
 
-export default SlotItem;
+export default SpellCard;

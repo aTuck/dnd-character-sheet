@@ -15,10 +15,10 @@ import Model from "./Model";
 
 interface SpellSlot3dModelProps {
   onCast?: (modelId: string, slotLevel: number) => void;
-  sendSlotModelToParent?: (modelId: string, modelRef: THREE.Group) => void;
-  position?: [number, number, number];
-  checkIsGlowing?: (modelId: string) => boolean;
+  sendSlotObject3DToParent?: (modelId: string, modelRef: THREE.Group) => void;
   checkRenderCastButton?: (modelId: string) => boolean;
+  checkIsGlowing?: (modelId: string) => boolean;
+  position?: [number, number, number];
   slotLevel?: number;
 }
 
@@ -26,7 +26,7 @@ const SpellSlot3dModel = forwardRef<THREE.Group, SpellSlot3dModelProps>(
   (
     {
       onCast,
-      sendSlotModelToParent,
+      sendSlotObject3DToParent,
       position,
       checkIsGlowing,
       checkRenderCastButton,
@@ -67,8 +67,8 @@ const SpellSlot3dModel = forwardRef<THREE.Group, SpellSlot3dModelProps>(
     useEffect(() => {
       console.log('sending mdoel to parent"');
       console.log(modelId, modelRef.current);
-      sendSlotModelToParent &&
-        sendSlotModelToParent(modelId, modelRef.current!);
+      sendSlotObject3DToParent &&
+        sendSlotObject3DToParent(modelId, modelRef.current!);
     }, [geometry, texture, modelId]);
 
     return (
@@ -80,6 +80,19 @@ const SpellSlot3dModel = forwardRef<THREE.Group, SpellSlot3dModelProps>(
               texture={texture}
               isGlowing={checkIsGlowing && checkIsGlowing(modelId)}
             />
+            {slotLevel && (
+              <Html position={[0, 2, 0]}>
+                <p
+                  style={{
+                    position: "absolute",
+                    top: "-220px",
+                    fontSize: "48px",
+                  }}
+                >
+                  Lv.{slotLevel}
+                </p>
+              </Html>
+            )}
             {checkRenderCastButton && checkRenderCastButton(modelId) && (
               <Html position={[0, 2, 0]}>
                 <button
