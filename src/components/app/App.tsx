@@ -14,11 +14,13 @@ import * as THREE from "three";
 import SpellGroup from "../SpellGroup";
 import SpellCard from "../SpellCard";
 import SpellSlot from "../SpellSlot";
+import { Character } from "../../types/Character";
+import PlayerSetting from "../PlayerSetting";
 // @ts-ignore
 
 function App() {
   const characterContext = useCharacter();
-  const character = characterContext.character;
+  const character: Character = characterContext.character!;
   const SpellSlots = Object.values(
     character?.spellcasting.spell_slots || {}
   ).flatMap((slot, idx) => {
@@ -43,45 +45,7 @@ function App() {
         height: "100vh",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          top: "100px",
-          left: "10px",
-        }}
-      >
-        <button onClick={() => console.log("Barbarian clicked")}>
-          Barbarian
-        </button>
-        <button onClick={() => console.log("Bard clicked")}>Bard</button>
-        <button onClick={() => console.log("Cleric clicked")}>Cleric</button>
-        <button onClick={() => console.log("Druid clicked")}>Druid</button>
-        <button onClick={() => console.log("Fighter clicked")}>Fighter</button>
-        <button onClick={() => console.log("Monk clicked")}>Monk</button>
-        <button onClick={() => console.log("Paladin clicked")}>Paladin</button>
-        <button onClick={() => console.log("Ranger clicked")}>Ranger</button>
-        <button onClick={() => console.log("Rogue clicked")}>Rogue</button>
-        <button onClick={() => console.log("Sorcerer clicked")}>
-          Sorcerer
-        </button>
-        <button onClick={() => console.log("Warlock clicked")}>Warlock</button>
-        <button onClick={() => console.log("Wizard clicked")}>Wizard</button>
-        {character && (
-          <div>
-            <h1>{character.basic_info.name}</h1>
-            <p>Class: {character.basic_info.class}</p>
-            <p>Level: {character.basic_info.level}</p>
-            <p>
-              Strength Modifier:{" "}
-              {character.derived.ability_modifiers.strength_modifier}
-            </p>
-            <p>Armor Class: {character.armor_class}</p>
-            <p>Spell Save DC: {character.spellcasting.spell_save_dc}</p>
-          </div>
-        )}
-        {/* <SpellCard /> */}
-      </div>
-
+      <PlayerSetting character={character} />
       <div
         style={{
           width: "1920px",

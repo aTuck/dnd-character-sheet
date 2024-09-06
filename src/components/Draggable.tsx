@@ -69,7 +69,8 @@ const Draggable = forwardRef<THREE.Group, DraggableProps>(
 
     const handlePointerDown = () => {
       setIsDragging(true);
-      document.body.style.cursor = 'url("./textures/dnd-cursor.png"), auto';
+      document.body.style.cursor =
+        'url("./textures/dnd-cursor-grabbing.png"), auto';
 
       initialPointerRef.current.x = pointer.x;
       initialPointerRef.current.y = pointer.y;
@@ -85,7 +86,7 @@ const Draggable = forwardRef<THREE.Group, DraggableProps>(
 
     const handlePointerUp = () => {
       setIsDragging(false);
-      document.body.style.cursor = "textures/dnd-cursor.png";
+      document.body.style.cursor = 'url("./textures/dnd-cursor.png"), auto';
 
       if (onSlot && draggableRef.current) {
         onSlot(draggableRef, childModelId || "no-model-id-in-draggable");
@@ -93,11 +94,11 @@ const Draggable = forwardRef<THREE.Group, DraggableProps>(
     };
 
     const handlePointerEnter = () => {
-      document.body.style.cursor = "textures/dnd-cursor.png";
+      document.body.style.cursor = 'url("./textures/dnd-cursor.png"), auto';
     };
 
     const handlePointerLeave = () => {
-      document.body.style.cursor = "textures/dnd-cursor.png";
+      document.body.style.cursor = 'url("./textures/dnd-cursor.png"), auto';
     };
 
     useFrame(() => {

@@ -22,14 +22,26 @@ interface SpellSlot3dModelProps {
   slotLevel?: number;
 }
 
-const SpellSlot3dModel = forwardRef<THREE.Group, SpellSlot3dModelProps>(
+const SpellSlot3dModel = forwardRef<
+  THREE.Group,
+  {
+    onCast?: (modelId: string, slotLevel: number) => void;
+    sendSlotObject3DToParent?: (modelId: string, modelRef: THREE.Group) => void;
+    checkRenderCastButton?: (modelId: string) => boolean;
+    checkIsGlowing?: (modelId: string) => boolean;
+    position?: [number, number, number];
+    rotation?: [number, number, number];
+    slotLevel?: number;
+  }
+>(
   (
     {
       onCast,
       sendSlotObject3DToParent,
-      position,
-      checkIsGlowing,
       checkRenderCastButton,
+      checkIsGlowing,
+      position,
+      rotation,
       slotLevel,
     },
     ref
@@ -74,7 +86,7 @@ const SpellSlot3dModel = forwardRef<THREE.Group, SpellSlot3dModelProps>(
     return (
       <>
         {geometry && (
-          <group ref={modelRef} position={position}>
+          <group ref={modelRef} position={position} rotation={rotation}>
             <Model
               geometry={geometry}
               texture={texture}

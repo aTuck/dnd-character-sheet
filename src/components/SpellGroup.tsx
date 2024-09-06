@@ -158,16 +158,12 @@ const SpellGroup: React.FC<SpellGroupProps> = ({ children }) => {
   // pull items towards their slots
   useFrame(() => {
     Object.keys(spellSlotsRef?.current).forEach((slotId) => {
-      // console.log(slotId);
       if (spellSlotsRef.current[slotId]) {
-        console.log(slotMappings);
         const cardId = slotMappings[slotId];
-        console.log(cardId);
         const card = spellCardsRef?.current[cardId!];
-        console.log(spellCardsRef);
-        console.log(card);
         if (card) {
           console.log("pulling", card);
+
           const stiffness = 0.1;
           const damping = 0.7;
 
