@@ -159,12 +159,12 @@
     "spell_slots": {
       "level_1": {
         "slot_level": 1,
-        "total": 4,
+        "total": 1,
         "expended": 2
       },
       "level_2": {
         "slot_level": 2,
-        "total": 0,
+        "total": 1,
         "expended": 0
       }
     }

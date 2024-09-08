@@ -99,6 +99,7 @@ const SpellSlot3dModel = forwardRef<
                     position: "absolute",
                     top: "-220px",
                     fontSize: "48px",
+                    pointerEvents: "none",
                   }}
                 >
                   Lv.{slotLevel}

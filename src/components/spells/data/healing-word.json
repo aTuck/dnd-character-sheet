@@ -4,7 +4,7 @@
   "level": 1,
   "school": "Evocation",
   "casting_time": "1 bonus action",
-  "range": "60 feet",
+  "range": "60 ft.",
   "components": ["V"],
   "duration": "Instantaneous",
   "classes": ["Bard", "Cleric", "Druid"],

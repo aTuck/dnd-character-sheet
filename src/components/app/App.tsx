@@ -16,21 +16,22 @@ import SpellCard from "../SpellCard";
 import SpellSlot from "../SpellSlot";
 import { Character } from "../../types/Character";
 import PlayerSetting from "../PlayerSetting";
+import SpellCardFace from "../spells/SpellCardFace";
 // @ts-ignore
 
 function App() {
   const characterContext = useCharacter();
   const character: Character = characterContext.character!;
   const SpellSlots = Object.values(
-    character?.spellcasting.spell_slots || {}
-  ).flatMap((slot, idx) => {
+    character?.spellcasting?.spell_slots || {}
+  ).flatMap((slot, slotLevelIndex) => {
     console.log(slot);
-    return Array.from({ length: slot.total }, (_, index) => (
+    return Array.from({ length: slot.total }, (_, slotIndex) => (
       <SpellSlot>
         <SpellSlot3dModel
-          key={`${idx}-${index}`}
+          key={`${slotLevelIndex}-${slotIndex}`}
           slotLevel={slot.slot_level}
-          position={[130 * index, idx * -30, 0]}
+          position={[90 * slotLevelIndex, 0, 0]}
         />
       </SpellSlot>
     ));
@@ -45,8 +46,9 @@ function App() {
         height: "100vh",
       }}
     >
-      <PlayerSetting character={character} />
-      <div
+      {/* <PlayerSetting character={character} /> */}
+      <SpellCardFace />
+      {/* <div
         style={{
           width: "1920px",
           height: "1080px",
@@ -72,35 +74,15 @@ function App() {
           <directionalLight color="blue" position={[0, 5, 5]} />
           <SpellGroup>
             <SpellCard>
-              <Draggable rotatesWithCursor position={[20, 0, 0]}>
-                <SpellCard3dModel />
-              </Draggable>
-            </SpellCard>
-            <SpellCard>
-              <Draggable rotatesWithCursor position={[100, 0, 0]}>
-                <SpellCard3dModel />
-              </Draggable>
-            </SpellCard>
-            <SpellCard>
               <Draggable rotatesWithCursor>
                 <SpellCard3dModel />
               </Draggable>
             </SpellCard>
             {SpellSlots}
-            {/* <SpellSlot>
-              <SpellSlot3dModel />
-            </SpellSlot>
-            <SpellSlot>
-              <SpellSlot3dModel position={[100, -50, 0]} />
-            </SpellSlot>
-            <SpellSlot>
-              <SpellSlot3dModel position={[100, 50, 0]} />
-            </SpellSlot> */}
           </SpellGroup>
-          <Test3dModel position={[-100, 0, 0]} />
           <Stats />
         </Canvas>
-      </div>
+      </div> */}
     </div>
   );
 }
